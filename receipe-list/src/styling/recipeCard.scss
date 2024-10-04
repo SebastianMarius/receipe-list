@@ -1,6 +1,5 @@
 .recipe-card {
   display: flex;
-  //background: red;
   align-items: center;
   height: 88px;
   border-radius: 14px;
@@ -12,7 +11,6 @@
   .recipe-photo {
     img {
       width: 88px;
-      //max-width: 88px;
       border-top-left-radius: 14px;
       border-bottom-left-radius: 14px;
     }
@@ -43,5 +41,11 @@
   .recipe-favorite-btn {
     margin-left: auto;
     margin-right: 10px;
+  }
+}
+
+@media only screen and (min-width: 992px) {
+  .recipe-card {
+    width: 400px;
   }
 }

@@ -9,7 +9,6 @@ import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 
 const fetchPhotosForRecipes = async (recipes) => {
-
     const photoPromises = recipes.map(async (recipe) => {
         const apiResponse = await fetch(`https://api.pexels.com/v1/search?query=${recipe}&per_page=1`, {
             headers: {
@@ -24,11 +23,11 @@ const fetchPhotosForRecipes = async (recipes) => {
     return photos;
 }
 
-const getReceipes = async (getReceipes) => {
+const getReceipes = async (userSearch) => {
     const genAI = new GoogleGenerativeAI(apiKey);
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const prompt = content.beforeInputPrompt + '5 cake recipes' + content.afterInputPrompt + content.jsonResponseFormat;
+    const prompt = content.beforeInputPrompt + userSearch + content.afterInputPrompt + content.jsonResponseFormat;
 
 
     const result = await model.generateContent(prompt);
@@ -37,12 +36,10 @@ const getReceipes = async (getReceipes) => {
 
 const searchBtnClick = async (userSearch, setReceipes, setRecipesPhoto, setLoading) => {
     if (userSearch.length <= 5) return;
-    console.log(userSearch);
     setLoading(true);
 
     const receipeDetails = await getReceipes(userSearch);
 
-    console.log(receipeDetails)
     const recipesName = JSON.parse(receipeDetails).map((e) => e.recipeName);
 
     let recipesPhotos;
@@ -50,10 +47,7 @@ const searchBtnClick = async (userSearch, setReceipes, setRecipesPhoto, setLoadi
         recipesPhotos = await fetchPhotosForRecipes(recipesName);
         setRecipesPhoto(recipesPhotos);
     }
-
-
     setReceipes(JSON.parse(receipeDetails));
-
 };
 
 export const SearchPage = (props) => {
@@ -62,7 +56,7 @@ export const SearchPage = (props) => {
     const [userSearch, setUserSearch] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const { setLikedRecipes, likedRecipes } = props;
+    const { setLikedRecipes, likedRecipes, handleAddToFavorite, displayLikedReceipes } = props;
 
     const handleKeyDown = (e) => {
         if(e.key === 'Enter')
@@ -89,15 +83,33 @@ export const SearchPage = (props) => {
 
             </div>
 
+            {
+                userSearch ?
+                    <>
+                        { receipes && <h1 className="suggested-receipes">Suggested receipes</h1>}
+                        <div>{receipes ? receipes.map((e, index) => <RecipeCard recipe={e}
+                                                                                key={index}
+                                                                                displayLikedReceipes = {displayLikedReceipes}
+                                                                                handleAddToFavorite={handleAddToFavorite}
+                                                                                likedRecipes={likedRecipes}
+                                                                                setLikedRecipes = {setLikedRecipes}
+                                                                                recipesPhoto={recipesPhoto[index]}/>) : loading && <Skeleton count={5} className="skeleton-styling" />}</div>
 
-            { receipes && <h1 className="suggested-receipes">Suggested receipes</h1>}
+                        { receipes && <button className="other-results-btn">I don't like these</button>}
+                    </> :
+                    <>
+                        {<h1 className="suggested-receipes">Favorites</h1>}
+                        <div>{displayLikedReceipes && displayLikedReceipes.map((e, index) => <RecipeCard recipe={e}
+                                                                                                         key={index}
+                                                                                displayLikedReceipes={displayLikedReceipes}
+                                                                                handleAddToFavorite={handleAddToFavorite}
+                                                                                likedRecipes={likedRecipes}
+                                                                                setLikedRecipes={setLikedRecipes}
+                                                                                recipesPhoto={recipesPhoto[index]}/>)}</div>
+                    </>
 
-            <div>{receipes ? receipes.map((e, index) => <RecipeCard recipe={e}
-                                                                    likedRecipes={likedRecipes}
-                                                                    setLikedRecipes = {setLikedRecipes}
-                                                                    recipesPhoto={recipesPhoto[index]}/>) : loading && <Skeleton count={5} className="skeleton-styling" />}</div>
+            }
 
-            { receipes && <button className="other-results-btn">I don't like these</button>}
         </div>
     )
 

@@ -4,32 +4,20 @@ import { CiHeart } from "react-icons/ci";
 import { IoMdHeart } from "react-icons/io";
 
 export const RecipeDetailPage = (props) => {
-    const [recipe, setRecipe] = useState(null); // State to store the recipe
+    const [recipe, setRecipe] = useState(null);
     const [recipePhoto, setRecipePhoto] = useState(null);
 
-    const {setLikedRecipes, likedRecipes} = props;
+    const {setLikedRecipes, likedRecipes, displayLikedReceipes} = props;
 
-    const handleLikeRecipe = (newLikedRecipe, e) => {
+    const handleAddToFavorite = (newLikedRecipe, e) => {
         e.stopPropagation();
-
-        setLikedRecipes(prevLikedRecipes => {
-
-            if (prevLikedRecipes.includes(newLikedRecipe)) {
-                const updatedRecipes = prevLikedRecipes.filter(recipe => recipe !== newLikedRecipe);
-                return updatedRecipes;
-            } else {
-                const updatedRecipes = [...prevLikedRecipes, newLikedRecipe];
-                return updatedRecipes;
-            }
-        });
+        setLikedRecipes({...recipe});
     };
 
     useEffect(() => {
         // Retrieve the stored recipe data from localStorage
         const storedRecipe = localStorage.getItem('currentRecipe');
         const storedPhoto = localStorage.getItem('currentRecipePhoto');
-
-        console.log(storedPhoto, ' stored photo')
 
         if (storedRecipe) {
             setRecipe(JSON.parse(storedRecipe));
@@ -42,7 +30,7 @@ export const RecipeDetailPage = (props) => {
     }
 
     return (
-        <div>
+        <div className="app-container">
           <div className="main-details">
               <div className="container photo-container">
                   <img src={recipePhoto} height={300} width={300}/>
@@ -53,7 +41,11 @@ export const RecipeDetailPage = (props) => {
                       <p>{recipe.cookingTime}</p>
                   </div>
                   <div className="recipe-favorite-btn">
-                      {  likedRecipes?.includes(recipe.recipeName)  ? <IoMdHeart  size={28} /> :  <CiHeart size={28} onClick={(e)=> handleLikeRecipe(recipe.recipeName, e)}/> }
+                      {displayLikedReceipes?.some(likedRecipe => likedRecipe.recipeName === recipe.recipeName) ? (
+                          <IoMdHeart size={28} color="#65558F"/>
+                      ) : (
+                          <CiHeart size={28} onClick={(e) => handleAddToFavorite(recipe, e)} />
+                      )}
                   </div>
 
               </div>

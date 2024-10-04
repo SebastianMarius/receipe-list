@@ -12,32 +12,37 @@ import {RecipeDetailPage} from "./pages/RecipeDetailPage";
 
 function App() {
 const [likedRecipes, setLikedRecipes] = useState([]);
+const [displayLikedReceipes, setdisplayLikedReceipes] = useState();
 
     useEffect(() => {
-        const storedLikedRecipes = JSON.parse(localStorage.getItem('likedRecipes'));
-        if (storedLikedRecipes)   setLikedRecipes(storedLikedRecipes);
-
+        const storedLikedRecipes = JSON.parse(localStorage.getItem('likedRecipes')) || [];
+        if(Object.keys(storedLikedRecipes).length > 0)
+         setLikedRecipes(...storedLikedRecipes);
     }, []);
 
     useEffect(() => {
-        if (likedRecipes.length > 0) {
+        if (Object.keys(likedRecipes).length > 0) {
             const storedLikedRecipes = JSON.parse(localStorage.getItem('likedRecipes')) || [];
+            const recipesArray = Array.isArray(storedLikedRecipes) ? storedLikedRecipes : [storedLikedRecipes];
+            const updatedRecipes = [...recipesArray, likedRecipes];
 
-
-            const updateRecipes = [...likedRecipes, ...storedLikedRecipes];
-            const uniqueRecipes = Array.from(new Set(updateRecipes));
+            const uniqueRecipes = updatedRecipes.reduce((acc, recipe) => {
+                if (!acc.some(existingRecipe => existingRecipe.recipeName === recipe.recipeName)) {
+                    acc.push(recipe);
+                }
+                return acc;
+            }, []);
 
             localStorage.setItem('likedRecipes', JSON.stringify(uniqueRecipes));
-            console.log(uniqueRecipes);
+            setdisplayLikedReceipes(uniqueRecipes);
         }
     }, [likedRecipes]);
-
 
     return (
       <Router>
           <Routes>
-              <Route path="/" element={<SearchPage setLikedRecipes={setLikedRecipes} likedRecipes={likedRecipes}/>} />
-              <Route path="/recipe/:recipeName" element={<RecipeDetailPage   setLikedRecipes={setLikedRecipes} likedRecipes={likedRecipes}   />} />
+              <Route path="/" element={<SearchPage setLikedRecipes={setLikedRecipes} likedRecipes={likedRecipes}  displayLikedReceipes={displayLikedReceipes}/>} />
+              <Route path="/recipe/:recipeName" element={<RecipeDetailPage   setLikedRecipes={setLikedRecipes} likedRecipes={likedRecipes}  displayLikedReceipes={displayLikedReceipes}  />} />
           </Routes>
       </Router>
 

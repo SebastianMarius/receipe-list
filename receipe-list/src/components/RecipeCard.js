@@ -5,34 +5,21 @@ import { useNavigate } from 'react-router-dom';
 import {useEffect} from "react";
 
 export const RecipeCard = (props) => {
-    const { recipe, recipesPhoto, setLikedRecipes, likedRecipes } = props
+    const { recipe, recipesPhoto, setLikedRecipes, likedRecipes, displayLikedReceipes } = props
 
     const navigate = useNavigate(); // Initialize navigate hook
 
-
     const handleCardClick = () => {
-
         localStorage.setItem('currentRecipe', JSON.stringify(recipe));
         localStorage.setItem('currentRecipePhoto', recipesPhoto);
         navigate(`/recipe/${recipe.recipeName}`);
     };
 
-    const handleLikeRecipe = (newLikedRecipe, e) => {
+
+    const handleAddToFavorite = (recipe,e) => {
         e.stopPropagation();
-
-        setLikedRecipes(prevLikedRecipes => {
-
-            if (prevLikedRecipes.includes(newLikedRecipe)) {
-                const updatedRecipes = prevLikedRecipes.filter(recipe => recipe !== newLikedRecipe);
-                return updatedRecipes;
-            } else {
-                const updatedRecipes = [...prevLikedRecipes, newLikedRecipe];
-                return updatedRecipes;
-            }
-        });
-    };
-
-
+        setLikedRecipes({...recipe});
+    }
 
     useEffect(() => {
         const likedRecipes = localStorage.getItem('likedReceipes');
@@ -48,7 +35,14 @@ export const RecipeCard = (props) => {
                 <p>{recipe.cookingTime}</p>
             </div>
             <div className="recipe-favorite-btn">
-                {likedRecipes?.includes(recipe.recipeName) ? <IoMdHeart size={28}/> : <CiHeart size={28} onClick={(e) => handleLikeRecipe(recipe.recipeName, e)}/>}
+
+                {displayLikedReceipes.some(likedRecipe => likedRecipe.recipeName === recipe.recipeName) ? (
+                    <IoMdHeart size={28} color="#65558F"/>
+                ) : (
+                    <CiHeart size={28} onClick={(e) => handleAddToFavorite(recipe, e)} />
+                )}
+
+
             </div>
 
         </div>

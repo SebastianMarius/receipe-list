@@ -1,0 +1,65 @@
+@import "colors";
+
+.input-container {
+  //background-color: #FFF;
+  position: relative;
+  border-radius: 30px;
+  //padding: 3px 50px 3px 10px;
+  border: 1px solid $input-primary;
+  margin-top: 30px;
+  padding-left: 16px;
+  display: flex;
+
+  .search-input {
+    background-color: transparent;
+    outline: none;
+    height: 35px;
+    font-size: 15px;
+    border: 0;
+    width: 85%;
+    //overflow: scroll;
+    color: $input-search-color;
+  }
+
+  .search-button {
+    background-color: transparent;
+    position: absolute;
+    right: 4px;
+    top: 0;
+    //background-color: #C00;
+    border-radius: 50%;
+    border: 0;
+    color: #FFF;
+    width: 35px;
+    height: 35px;
+    outline: 0;
+
+  }
+}
+
+.suggested-receipes {
+  font-family: "Outfit";
+  font-weight: 700;
+}
+
+.other-results-btn {
+  width: 180px;
+  height: 48px;
+  background-color: $button-primary;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.container {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.skeleton-styling {
+  width: 80% !important;
+  margin-top: 20px;
+  height: 90px;
+}
